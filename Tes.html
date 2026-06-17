@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Kado Spesial Untuk Kesayanganku</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #ffe6ea;
+            --pink-soft: #ffb3c6;
+            --pink-main: #ff8fab;
+            --pink-dark: #fb6f92;
+            --text-dark: #5c4033;
+            --white-glass: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-color) 0%, var(--pink-soft) 100%);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ANIMASI PARTICLES JATUH */
+        .particles-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        .particle img {
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(251, 111, 146, 0.3));
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .bg-hearts {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: radial-gradient(var(--pink-main) 1.5px, transparent 1.5px);
+            background-size: 30px 30px;
+            opacity: 0.2;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .card {
+            background: var(--white-glass);
+            padding: 30px 20px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(251, 111, 146, 0.25);
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            border: 3px solid var(--pink-soft);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            display: none; 
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .card::-webkit-scrollbar { width: 0px; }
+
+        .active-card { display: block; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .gif-img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 5px 10px rgba(255, 143, 171, 0.3));
+        }
+
+        .btn {
+            background-color: var(--pink-main);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(251, 111, 146, 0.3);
+            transition: all 0.2s;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        .btn:hover { background-color: var(--pink-dark); transform: translateY(-2px); }
+        .btn:active { transform: translateY(1px); }
+
+        .btn-run {
+            background-color: #b0b0b0;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            z-index: 99999;
+            position: relative;
+        }
+
+        /* TIMER HITUNG MUNDUR */
+        .countdown-timer {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--pink-dark);
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            border: 2px dashed var(--pink-main);
+        }
+        
+        /* GAME MEMORI */
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+            perspective: 1000px;
+        }
+
+        .memory-card {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: var(--pink-soft);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .memory-card.flip { transform: rotateY(180deg); }
+
+        .memory-card .front, .memory-card .back {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .memory-card .front { background-color: white; transform: rotateY(180deg); }
+        .memory-card .front img { width: 80%; height: 80%; object-fit: contain; }
+        .memory-card .back { background-color: var(--pink-main); color: white; font-size: 1.5rem; font-weight: bold; }
+        
+        /* CELEBRATION OVERLAY */
+        .celebration-zone {
+            display: none;
+            margin: 15px 0;
+            animation: popIn 0.5s ease;
+        }
+
+        .romantic-letter {
+            text-align: left;
+            font-size: 0.95rem;
+            border-top: 2px dashed var(--pink-main);
+            padding-top: 15px;
+            margin-top: 10px;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            border-radius: 15px;
+            min-height: 150px;
+        }
+
+        /* STAGE ANIMASI FOTO KLIMAKS */
+        #climaxStage {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, #ffe6ea 0%, #ffb3c6 100%);
+            z-index: 999999;
+            display: none;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #mosaicContainer {
+            position: absolute;
+            width: 100%; height: 100%;
+            top: 0; left: 0;
+            transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 2s ease;
+            transform: scale(1);
+        }
+
+        .animated-photo {
+            position: absolute;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+        }
+
+        #finalCenterPhoto {
+            position: relative;
+            width: 240px; height: 240px;
+            border-radius: 50%;
+            border: 6px solid var(--white-glass);
+            object-fit: cover;
+            box-shadow: 0 15px 35px rgba(251, 111, 146, 0.6);
+            z-index: 10;
+            transform: scale(0);
+            transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .climax-ui {
+            position: absolute;
+            bottom: 5%;
+            text-align: center;
+            z-index: 20;
+            width: 90%;
+            max-width: 400px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: transform 1s ease, opacity 1s ease;
+        }
+
+        .climax-ui h2 {
+            font-family: 'Fredoka One', cursive;
+            color: var(--pink-dark);
+            text-shadow: 0 2px 4px rgba(255,255,255,0.6);
+            margin-bottom: 5px;
+            font-size: 1.6rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-hearts"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <audio id="bgm" loop preload="auto">
+        <source src="https://raw.githubusercontent.com/Knuckleas/happyday/refs/heads/main/LIRIK%20LAGU%20PANJANG%20UMUR%20-%20CHINTYA%20GABRIELLA.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="card active-card" id="slide0">
+        <img src="https://feeldreams.github.io/pandaputih.gif" class="gif-img" alt="Panda Putih" referrerpolicy="no-referrer">
+        <h1>Siapa di Sana? 🕵️‍♂️</h1>
+        
+        <label class="label-input" style="display:block; margin-top:10px; text-align:left;">Nama Kamu:</label>
+        <input type="text" id="usernameInput" style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:1px solid #ccc;" placeholder="Ketik nama kamu..." autocomplete="off">
+        
+        <label class="label-input" style="display:block; text-align:left;">Unggah Foto Utama (Tengah Hati):</label>
+        <input type="file" id="mainPhotoInput" style="width:100%; padding:10px; margin-bottom:10px;" accept="image/*">
+
+        <label class="label-input" style="display:block; text-align:left;">Unggah Galeri Foto (Untuk Kurva Hati):</label>
+        <input type="file" id="galleryPhotoInput" style="width:100%; padding:10px; margin-bottom:10px;" accept="image/*" multiple>
+        
+        <button class="btn" style="margin-top: 10px;" onclick="prosesDataAwal()">Simpan & Lanjut 🎁</button>
+    </div>
+
+    <div class="card" id="slide05">
+        <img src="https://media.tenor.com/PZ7aWwYF6F0AAAAi/doraemon.gif" class="gif-img" alt="Doraemon Transisi" referrerpolicy="no-referrer">
+        <h1>Semua Siap! 💌</h1>
+        <p class="message-text">Kejutan digitalmu sudah siap tersimpan dengan aman.</p>
+        
+        <div id="countdownContainer" style="display:none;">
+            <p style="margin-top: 10px; font-size: 0.9rem;">Namun kado ini masih terkunci. Sabar ya, tunggu sampai waktunya tiba:</p>
+            <div class="countdown-timer" id="timerText">00 Hari 00 Jam 00 Menit 00 Detik</div>
+        </div>
+
+        <button class="btn" id="btnBukaPesan" onclick="bukaPesanUtama()" style="display:none;">Buka Pesan 🔓</button>
+    </div>
+
+    <div class="card" id="slide1">
+        <img src="https://feeldreams.github.io/pusn.gif" class="gif-img" alt="Kucing Pusn" referrerpolicy="no-referrer">
+        <h1>Ciyee, Mahasiswi Cantik Nambah Umur!</h1>
+        <p class="message-text">Selamat hari lahir untuk gadis paling mempesona. Hari ini seluruh perhatian tertuju padamu! ✨</p>
+        <button class="btn" onclick="nextSlide(1)">Lanjut Dong ➡️</button>
+    </div>
+
+    <div class="card" id="slide2">
+        <img src="https://feeldreams.github.io/mikir.gif" class="gif-img" alt="Mikir" referrerpolicy="no-referrer">
+        <h1>Tapi Mohon Maaf Banget...</h1>
+        <p class="message-text">Aku tahu tugas semester 5 sangat menguras tenagamu. Aku hanya bisa memberikan kejutan digital ini untuk menghiburmu. Kamu tetap menyukainya, kan? 🥺</p>
+        <button class="btn" onclick="nextSlide(2)">Kok Gitu Sih?! 😠</button>
+    </div>
+
+    <div class="card" id="slide3">
+        <img src="https://feeldreams.github.io/cilukba.gif" class="gif-img" alt="Cilukba" referrerpolicy="no-referrer">
+        <h1>Hehehe, Jangan Cemberut!</h1>
+        <p class="message-text">Maafkan keisenganku ya, Cantik. Ayo tersenyum! Senyummu selalu berhasil membuatku kagum. Kita baikan, ya?</p>
+        
+        <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+            <button class="btn" onclick="lanjutKeGame()">Iya, Mau Maafin ❤️</button>
+            <button class="btn btn-run" id="btnNo">Enggak Mau! 😡</button>
+        </div>
+    </div>
+
+    <div class="card" id="slide4">
+        <h1>Tunggu Dulu! 🎮</h1>
+        <p class="message-text">Selesaikan tantangan memori ini untuk membaca surat rahasiaku!</p>
+        
+        <div class="game-board" id="gameBoard"></div>
+        
+        <div class="celebration-zone" id="winSection">
+            <h2 style="color:var(--pink-dark); margin-bottom:10px;">Yeeay Berhasil! 🎉</h2>
+            <button class="btn" id="btnLanjutGame" onclick="nextSlide(4); startTyping();">Buka Surat Utama 💌</button>
+        </div>
+    </div>
+
+    <div class="card" id="slide5">
+        <img src="https://feeldreams.github.io/g5.gif" class="gif-img" style="width:100px; height:100px;" alt="Peluk" referrerpolicy="no-referrer">
+        <h1>Pesan Untukmu 💖</h1>
+        <div class="romantic-letter" id="typedTextContainer"></div>
+    </div>
+
+    <div id="climaxStage">
+        <div id="mosaicContainer"></div>
+        <img id="finalCenterPhoto" alt="Kesayanganku">
+        <div class="climax-ui" id="climaxUiText">
+            <h2>Selamat Ulang Tahun! ✨</h2>
+            <p style="font-weight:700; color:var(--text-dark); line-height:1.4;">Dari pria yang selalu mengagumimu.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- ANIMASI PARTICLES SEPANJANG HALAMAN ---
+        const particleItems = [
+            { type: 'text', val: '❤️' }, { type: 'text', val: '💖' }, { type: 'text', val: '🌸' }, { type: 'text', val: '✨' },
+            { type: 'img', val: 'https://github.com/Knuckleas/happyday/blob/main/animal_14939688.png?raw=true' },
+            { type: 'img', val: 'https://github.com/Knuckleas/happyday/blob/main/animal_14939711.png?raw=true' }
+        ];
+
+        const particleContainer = document.getElementById('particles');
+        function createParticle() {
+            const el = document.createElement('div');
+            el.classList.add('particle');
+            const item = particleItems[Math.floor(Math.random() * particleItems.length)];
+            if (item.type === 'text') {
+                el.innerText = item.val;
+                el.style.fontSize = (Math.random() * 15 + 15) + 'px';
+            } else {
+                const img = document.createElement('img');
+                img.src = item.val; img.style.width = (Math.random() * 20 + 20) + 'px';
+                el.appendChild(img);
+            }
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            particleContainer.appendChild(el);
+            setTimeout(() => { el.remove(); }, 8000);
+        }
+        setInterval(createParticle, 250);
+
+        // --- SISTEM PENYIMPANAN DATA & MULTI FOTO ---
+        let namaPenerima = "Ayang";
+        let mainPhotoData = "";
+        let gallerySources = [];
+        let countdownInterval;
+
+        const targetDate = new Date("July 10, 2026 00:00:00").getTime();
+
+        function prosesDataAwal() {
+            const inputNama = document.getElementById('usernameInput').value.trim();
+            const mainFile = document.getElementById('mainPhotoInput').files[0];
+            const galleryFiles = document.getElementById('galleryPhotoInput').files;
+
+            if (inputNama === "") { alert("Masukkan nama kamu terlebih dahulu ya!"); return; }
+            namaPenerima = inputNama;
+
+            if (mainFile) {
+                const reader = new FileReader();
+                reader.onload = (e) => { 
+                    mainPhotoData = e.target.result; 
+                    document.getElementById('finalCenterPhoto').src = mainPhotoData;
+                };
+                reader.readAsDataURL(mainFile);
+            }
+
+            const maxFiles = Math.min(galleryFiles.length, 10);
+            if (maxFiles > 0) {
+                for (let i = 0; i < maxFiles; i++) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => { 
+                        gallerySources.push(e.target.result);
+                    };
+                    reader.readAsDataURL(galleryFiles[i]);
+                }
+            }
+
+            document.getElementById('slide0').classList.remove('active-card');
+            document.getElementById('slide05').classList.add('active-card');
+
+            jalankanHitungMundur();
+        }
+
+        function jalankanHitungMundur() {
+            cekWaktu();
+            countdownInterval = setInterval(cekWaktu, 1000);
+        }
+
+        function cekWaktu() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const btnBuka = document.getElementById('btnBukaPesan');
+            const countdownBox = document.getElementById('countdownContainer');
+            const timerText = document.getElementById('timerText');
+
+            if (distance <= 0) {
+                countdownBox.style.display = 'none';
+                btnBuka.style.display = 'inline-block';
+                clearInterval(countdownInterval);
+            } else {
+                countdownBox.style.display = 'block';
+                btnBuka.style.display = 'none';
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                timerText.innerHTML = `${days} Hari ${hours} Jam ${minutes} Menit ${seconds} Detik`;
+            }
+        }
+
+        function bukaPesanUtama() {
+            document.getElementById('bgm').play().catch(e => console.log("Audio diblokir browser:", e));
+            document.getElementById('slide05').classList.remove('active-card');
+            document.getElementById('slide1').classList.add('active-card');
+        }
+
+        function nextSlide(currentSlide) {
+            document.getElementById(`slide${currentSlide}`).classList.remove('active-card');
+            document.getElementById(`slide${currentSlide + 1}`).classList.add('active-card');
+        }
+
+        // --- TOMBOL LARI SECARA REAL-TIME DI LAYAR ---
+        const btnNo = document.getElementById('btnNo');
+        function lari() {
+            btnNo.style.position = 'fixed';
+            const maxX = window.innerWidth - btnNo.offsetWidth - 20;
+            const maxY = window.innerHeight - btnNo.offsetHeight - 20;
+            const randomX = Math.max(10, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(10, Math.floor(Math.random() * maxY));
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+        }
+        btnNo.addEventListener('mouseover', lari);
+        btnNo.addEventListener('touchstart', (e) => { e.preventDefault(); lari(); }, { passive: false });
+
+        function lanjutKeGame() {
+            btnNo.style.display = 'none';
+            nextSlide(3);
+            initGame();
+        }
+
+        // --- GAME MEMORI (6 PASANG = 12 KARTU) ---
+        const gameBoard = document.getElementById('gameBoard');
+        const iconArray = [
+            'https://github.com/Knuckleas/happyday/blob/main/animal_14939688.png?raw=true',
+            'https://github.com/Knuckleas/happyday/blob/main/animal_14939711.png?raw=true',
+            'https://github.com/Knuckleas/happyday/blob/main/food_16150423.png?raw=true',
+            'https://github.com/Knuckleas/happyday/blob/main/food_16150418.png?raw=true',
+            'https://github.com/Knuckleas/happyday/blob/main/food_13635854.png?raw=true',
+            'https://github.com/Knuckleas/happyday/blob/main/food_14934546.png?raw=true'
+        ];
+        let cardsArray = [...iconArray, ...iconArray];
+        let hasFlippedCard = false, lockBoard = false, firstCard, secondCard, matchCount = 0;
+
+        function initGame() {
+            gameBoard.innerHTML = ''; matchCount = 0;
+            document.getElementById('winSection').style.display = 'none';
+            cardsArray.sort(() => 0.5 - Math.random());
+            cardsArray.forEach((imgSrc) => {
+                const card = document.createElement('div');
+                card.classList.add('memory-card'); card.dataset.image = imgSrc;
+                card.innerHTML = `<div class="front"><img src="${imgSrc}"></div><div class="back">?</div>`;
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard || this === firstCard) return;
+            this.classList.add('flip');
+            if (!hasFlippedCard) { hasFlippedCard = true; firstCard = this; return; }
+            secondCard = this; checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.image === secondCard.dataset.image;
+            if (isMatch) {
+                firstCard.removeEventListener('click', flipCard);
+                secondCard.removeEventListener('click', flipCard);
+                resetBoard(); matchCount++;
+                if (matchCount === iconArray.length) triggerWinCelebration();
+            } else {
+                lockBoard = true;
+                setTimeout(() => { firstCard.classList.remove('flip'); secondCard.classList.remove('flip'); resetBoard(); }, 1000);
+            }
+        }
+
+        function resetBoard() { [hasFlippedCard, lockBoard] = [false, false]; [firstCard, secondCard] = [null, null]; }
+
+        function triggerWinCelebration() {
+            document.getElementById('winSection').style.display = 'block';
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const conf = document.createElement('div');
+                    conf.style.position = 'fixed';
+                    conf.style.width = Math.random() * 10 + 5 + 'px';
+                    conf.style.height = Math.random() * 10 + 5 + 'px';
+                    conf.style.backgroundColor = ['#ff69b4','#ffb6c6','#fffff0','#ff00ff','#00ffff'][Math.floor(Math.random()*5)];
+                    conf.style.left = Math.random() * 100 + 'vw';
+                    conf.style.top = '-5vh';
+                    conf.style.zIndex = '99999';
+                    conf.style.borderRadius = '50%';
+                    conf.style.transition = 'transform 2s linear, opacity 2s ease';
+                    document.body.appendChild(conf);
+                    
+                    setTimeout(() => {
+                        conf.style.transform = `translate(${Math.random()*100 - 50}px, 105vh) rotate(${Math.random()*360}deg)`;
+                    }, 50);
+                    setTimeout(() => conf.remove(), 2100);
+                }, i * 30);
+            }
+        }
+
+        // --- MESIN KETIK SURAT UTAMA ---
+        let typed = false;
+        function startTyping() {
+            if (typed) return; typed = true;
+            
+            const rawText = `Selamat Ulang Tahun Kesayanganku ! ^^|Boleh ya, aku merayakan hari spesialmu lewat tulisan ini?|Katanya, makin dewasa, ulang tahun bukan lagi soal seberapa ramai pesta. Tapi tentang siapa yang tetap tinggal saat dunia lagi gak baik-baik aja.|Dan lewat momen ini, aku berharap kamu tahu kalau kamu selalu bisa mengandalkanku untuk itu. Isi tulisan ini gak lebih dari sekadar harapan dan do'a.|Terima kasih ya, sudah mengizinkan aku menjadi bagian dari ceritamu di sepanjang tahun lalu. Aku tahu betul betapa banyak tawa, tangis, dan lelah yang kamu lewati di tahun sebelumnya.|Karena itu, aku bersyukur bisa merayakanmu di tahun ini. Dan kamu pantas dirayakan, meskipun kecil-kecilan. Terima kasih karena sudah selalu berusaha mencari alasan untuk tetap bertahan dan berjuang.|Semoga di usia ini, tangki cintamu terisi penuh, duniamu terasa lebih teduh, dan perlahan mimpi-mimpimu itu tumbuh menjadi utuh. ❤️`;
+            
+            const container = document.getElementById('typedTextContainer');
+            let index = 0;
+            
+            function typeWriter() {
+                if (index < rawText.length) {
+                    let char = rawText.charAt(index);
+                    if (char === '|') container.innerHTML += '<br><br>';
+                    else container.innerHTML += char;
+                    document.getElementById('slide5').scrollTop = document.getElementById('slide5').scrollHeight;
+                    index++; setTimeout(typeWriter, 50);
+                } else {
+                    setTimeout(jalankanKlimaksAnimasiFoto, 3000);
+                }
+            }
+            typeWriter();
+        }
+
+        // --- KLIMAKS ANIMASI FOTO (POLA HATI & ZOOM) ---
+        function jalankanKlimaksAnimasiFoto() {
+            document.getElementById('slide5').classList.remove('active-card');
+            const stage = document.getElementById('climaxStage');
+            const mosaic = document.getElementById('mosaicContainer');
+            stage.style.display = 'flex';
+
+            const fotoAset = gallerySources.length > 0 ? gallerySources : iconArray;
+
+            let maxTitikHati = 40; 
+            let count = 0;
+
+            function spawnFotoHati() {
+                if (count >= maxTitikHati) {
+                    setTimeout(pemicuKlimaksFinal, 1200);
+                    return;
+                }
+
+                // Kalkulasi Parametrik Kurva Hati
+                const t = (count / maxTitikHati) * Math.PI * 2;
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+
+                // Konversi koordinat ke Persentase Layar
+                const leftPos = 50 + (x * 2.4); 
+                const topPos = 45 - (y * 2.4);
+
+                const src = fotoAset[count % fotoAset.length];
+                const img = document.createElement('img');
+                img.src = src;
+                img.classList.add('animated-photo');
+
+                img.style.left = `calc(${leftPos}% - 25px)`; 
+                img.style.top = `calc(${topPos}% - 25px)`;
+                img.style.width = '50px';
+                img.style.height = '50px'; 
+
+                mosaic.appendChild(img);
+
+                setTimeout(() => {
+                    img.style.opacity = '0.9';
+                    img.style.transform = 'scale(1)';
+                }, 50);
+
+                count++;
+                setTimeout(spawnFotoHati, 90); 
+            }
+            spawnFotoHati();
+        }
+
+        function pemicuKlimaksFinal() {
+            const mosaic = document.getElementById('mosaicContainer');
+            const centerPhoto = document.getElementById('finalCenterPhoto');
+            const uiText = document.getElementById('climaxUiText');
+
+            // Efek Zoom-Out untuk Kurva Hati
+            mosaic.style.transform = 'scale(0.85)';
+            mosaic.style.opacity = '0.8';
+
+            // Efek Zoom-In Foto Utama di Tengah
+            setTimeout(() => {
+                centerPhoto.style.transform = 'scale(1)';
+                
+                setTimeout(() => {
+                    uiText.style.opacity = '1';
+                    uiText.style.transform = 'translateY(0)';
+                }, 800);
+            }, 600);
+        }
+    </script>
+</body>
+</html>
